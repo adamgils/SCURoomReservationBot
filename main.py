@@ -24,6 +24,7 @@ def book_room():
     service = Service(PATH)
     service.start()
     driver = webdriver.Remote(service.service_url)
+    driver.implicitly_wait(30)
 
     driver.get("https://www.scu.edu/apps/rooms/")
 
@@ -40,8 +41,16 @@ def book_room():
     # Click Login
     driver.find_element("name", "_eventId_proceed").click()
 
+    # Click Grid View
+    grid = WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located(
+            (By.LINK_TEXT, "Grid")
+        )
+    )
+    grid.click()
+
     # Click on LC 210
-    element = WebDriverWait(driver, 15).until(
+    element = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located(
             (By.LINK_TEXT, "LC 210")
         )
@@ -49,7 +58,7 @@ def book_room():
     element.click()
 
     # Click Other Date
-    other = WebDriverWait(driver, 15).until(
+    other = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located(
             (By.LINK_TEXT, "Other...")
         )
@@ -57,7 +66,7 @@ def book_room():
     other.click()
 
     # Input Date
-    date_input = WebDriverWait(driver, 15).until(
+    date_input = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located(
             (By.ID, "dpr_startdate")
         )
@@ -72,7 +81,7 @@ def book_room():
     if date_num in weekday:
         # Input Start Time at 8am
         time_text = "8:00 AM"
-        time_input = WebDriverWait(driver, 10).until(
+        time_input = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "time_start"))
         )
         time_input.clear()
@@ -80,49 +89,41 @@ def book_room():
     else:
         # Input Start Time at 11am
         time_text = "11:00 AM"
-        time_input = WebDriverWait(driver, 10).until(
+        time_input = WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.ID, "time_start"))
         )
         time_input.clear()
         time_input.send_keys(time_text)
 
-        # Input Event Name
-        event_text = "Room Reservation"
-        event_input = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.ID, "purpose"))
-        )
-        event_input.send_keys(event_text)
+    # Input Event Name
+    event_text = "Room Reservation"
+    event_input = WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located((By.ID, "purpose"))
+    )
+    event_input.send_keys(event_text)
 
-        # Click Hours Amount
-        if date_num in weekday:
-            hours_button = driver.find_element(By.LINK_TEXT, "2 hrs")
-            hours_button.click()
-            time.sleep(2)
-        else:
-            hours_button = driver.find_element(By.LINK_TEXT, "4 hrs")
-            hours_button.click()
-            time.sleep(2)
+    # Click Hours Amount
+    if date_num in weekday:
+        hours_button = driver.find_element(By.LINK_TEXT, "2 hrs")
+        hours_button.click()
+        time.sleep(5)
+    else:
+        hours_button = driver.find_element(By.LINK_TEXT, "4 hrs")
+        hours_button.click()
+        time.sleep(5)
 
-        # Click Done
-        done_button = driver.find_element(By.CLASS_NAME, "btn-success")
-        done_button.click()
-        time.sleep(2)
+    # Click Done
+    done_button = driver.find_element(By.CLASS_NAME, "btn-success")
+    done_button.click()
+    time.sleep(5)
 
-        # Click Done Again
-        done_button = driver.find_element(By.CLASS_NAME, "btn")
-        done_button.click()
-        time.sleep(2)
+    # Click Done Again
+    done_button = driver.find_element(By.CLASS_NAME, "btn")
+    done_button.click()
+    time.sleep(5)
 
-        driver.quit()
+    time.sleep(5)
+    driver.quit()
 
 
 book_room()
-
-"""
-schedule.every().day.at("11:00").do(book_room)
-
-while True:
-    schedule.run_pending()
-    time.sleep(5)
-    print("checking...")
-"""
